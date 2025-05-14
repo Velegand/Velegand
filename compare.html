@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Image Comparison</title>
+  <!-- JuxtaposeJS CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css"
+  />
+  <style>
+    body { margin: 0; padding: 0; }
+    #slider-container { width: 100%; height: 100vh; }
+    /* Ensure image fills container */
+    .juxtapose .img { object-fit: contain; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="slider-container"></div>
+
+  <!-- JuxtaposeJS Script -->
+  <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
+  <!-- Panzoom Script -->
+  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+  <script>
+    // Parse ?img1=…&img2=… from URL
+    const params = new URLSearchParams(window.location.search);
+    const before = params.get('img1');
+    const after  = params.get('img2');
+
+    // Initialize JuxtaposeJS
+    new juxtapose.JXSlider('#slider-container', [
+      {
+        src: before,
+        label: 'Before'
+      },
+      {
+        src: after,
+        label: 'After'
+      }
+    ], {
+      animate: true,
+      showLabels: true,
+      showCredits: false,
+      makeResponsive: true
+    });
+
+    // Wait a tick, then add Panzoom to the images
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.juxtapose img').forEach(img => {
+        Panzoom(img, { maxScale: 5, contain: 'outside' });
+      });
+    });
+  </script>
+</body>
+</html>
