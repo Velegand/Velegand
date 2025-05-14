@@ -9,14 +9,19 @@
     href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css"
   />
   <style>
-    body { margin: 0; padding: 0; }
-    #slider-container { width: 100%; height: 100vh; }
-    /* Ensure image fills container */
+    body { margin: 0; padding: 0; font-family: sans-serif; }
+    #slider-container { width: 100%; height: 80vh; }
     .juxtapose .img { object-fit: contain; height: 100%; }
+    .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #f0f0f0; }
+    .filenames div { font-size: 14px; color: #333; word-break: break-all; }
   </style>
 </head>
 <body>
   <div id="slider-container"></div>
+  <div class="filenames">
+    <div id="before-name">Before: </div>
+    <div id="after-name">After: </div>
+  </div>
 
   <!-- JuxtaposeJS Script -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
@@ -24,21 +29,27 @@
   <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
   <script>
-    // Parse ?img1=…&img2=… from URL
+    // Parse img1 & img2 from URL
     const params = new URLSearchParams(window.location.search);
     const before = params.get('img1');
     const after  = params.get('img2');
 
-    // Initialize JuxtaposeJS
+    // Extract filenames
+    function getFilename(url) {
+      try { return decodeURIComponent(url.split('/').pop().split('?')[0]); }
+      catch { return url; }
+    }
+    const beforeName = getFilename(before) || 'Before';
+    const afterName  = getFilename(after)  || 'After';
+
+    // Display filenames
+    document.getElementById('before-name').textContent = `Before: ${beforeName}`;
+    document.getElementById('after-name').textContent  = `After: ${afterName}`;
+
+    // Initialize JuxtaposeJS with dynamic labels
     new juxtapose.JXSlider('#slider-container', [
-      {
-        src: before,
-        label: 'Before'
-      },
-      {
-        src: after,
-        label: 'After'
-      }
+      { src: before, label: beforeName },
+      { src: after,  label: afterName  }
     ], {
       animate: true,
       showLabels: true,
@@ -46,7 +57,7 @@
       makeResponsive: true
     });
 
-    // Wait a tick, then add Panzoom to the images
+    // Add Panzoom to images for zoom and pan
     window.addEventListener('load', () => {
       document.querySelectorAll('.juxtapose img').forEach(img => {
         Panzoom(img, { maxScale: 5, contain: 'outside' });
