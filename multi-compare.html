@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Multi Image Comparison</title>
+  <!-- JuxtaposeJS CSS -->
+  <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
+  <style>
+    body { margin: 0; padding: 0; font-family: sans-serif; }
+    .comparison-container { width: 100%; max-width: 800px; margin: 40px auto; }
+    .slider { width: 100%; height: 60vh; }
+    .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #f0f0f0; font-size: 14px; color: #333; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; padding-top: 20px;">Multi Image Comparison</h1>
+
+  <!-- Comparison #1 -->
+  <div class="comparison-container">
+    <div id="slider1" class="slider"></div>
+    <div class="filenames">
+      <div id="before-name-1"></div>
+      <div id="after-name-1"></div>
+    </div>
+  </div>
+
+  <!-- Comparison #2 -->
+  <div class="comparison-container">
+    <div id="slider2" class="slider"></div>
+    <div class="filenames">
+      <div id="before-name-2"></div>
+      <div id="after-name-2"></div>
+    </div>
+  </div>
+
+  <!-- Comparison #3 -->
+  <div class="comparison-container">
+    <div id="slider3" class="slider"></div>
+    <div class="filenames">
+      <div id="before-name-3"></div>
+      <div id="after-name-3"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
+  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+  <script>
+    // Hardcoded image pairs
+    const comparisons = [
+      {
+        before: 'https://example.com/images/before1.jpg',
+        after:  'https://example.com/images/after1.jpg',
+      },
+      {
+        before: 'https://example.com/images/before2.jpg',
+        after:  'https://example.com/images/after2.jpg',
+      },
+      {
+        before: 'https://example.com/images/before3.jpg',
+        after:  'https://example.com/images/after3.png',
+      }
+    ];
+
+    function getFilename(url) {
+      try { return decodeURIComponent(url.split('/').pop().split('?')[0]); }
+      catch { return url; }
+    }
+
+    comparisons.forEach((cmp, idx) => {
+      const containerId = `slider${idx+1}`;
+      const beforeNameId = `before-name-${idx+1}`;
+      const afterNameId = `after-name-${idx+1}`;
+
+      // Display filenames
+      document.getElementById(beforeNameId).textContent = `Before: ${getFilename(cmp.before)}`;
+      document.getElementById(afterNameId).textContent  = `After: ${getFilename(cmp.after)}`;
+
+      // Initialize JuxtaposeJS slider
+      new juxtapose.JXSlider(`#${containerId}`, [
+        { src: cmp.before, label: getFilename(cmp.before) },
+        { src: cmp.after,  label: getFilename(cmp.after)  }
+      ], {
+        animate: true,
+        showLabels: true,
+        showCredits: false,
+        makeResponsive: true
+      });
+
+      // Add Panzoom on load
+      window.addEventListener('load', () => {
+        document.querySelectorAll(`#${containerId} img`).forEach(img => {
+          Panzoom(img, { maxScale: 4, contain: 'outside' });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
