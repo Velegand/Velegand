@@ -5,95 +5,66 @@
   <title>Multi Image Comparison</title>
   <!-- JuxtaposeJS CSS -->
   <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
-  <link href='https://fonts.googleapis.com/css?family=Monda' rel='stylesheet'>
   <style>
-    body { margin: 0; padding: 0; font-family: Monda;background-color:#0d1117; color:#f0f6fc; }
-    .comparison-container { width: 100%; max-width: 1700px; margin: 40px auto; }
+    body { margin: 0; padding: 0; font-family: sans-serif; }
+    .comparison-container { width: 100%; max-width: 800px; margin: 40px auto; }
     .slider { width: 100%; height: 60vh; }
-    .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #151b23; font-size: 14px; color: #f0f6fc; word-break: break-all; }
+    .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #f0f0f0; font-size: 14px; color: #333; word-break: break-all; }
   </style>
 </head>
 <body>
   <h1 style="text-align: center; padding-top: 20px;">Multi Image Comparison</h1>
-  <h2 style="text-align: center;">7038 kb/s VS 2035 kb/s</h2>
 
-  <!-- Comparison #1 -->
-  <div class="comparison-container">
-    <div id="slider1" class="slider"></div>
-    <div class="filenames">
-      <div id="before-name-1"></div>
-      <div id="after-name-1"></div>
-    </div>
-  </div>
-
-  <!-- Comparison #2 -->
-  <div class="comparison-container">
-    <div id="slider2" class="slider"></div>
-    <div class="filenames">
-      <div id="before-name-2"></div>
-      <div id="after-name-2"></div>
-    </div>
-  </div>
-
-  <!-- Comparison #3 -->
-  <div class="comparison-container">
-    <div id="slider3" class="slider"></div>
-    <div class="filenames">
-      <div id="before-name-3"></div>
-      <div id="after-name-3"></div>
-    </div>
-  </div>
+  <div id="comparisons"></div>
 
   <!-- Scripts -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
-
   <script>
-    // Hardcoded image pairs
-    const comparisons = [
-      {
-        before: 'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Source_1.png',
-        after:  'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Re-encode_1.png',
-      },
-      {
-        before: 'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Source_2.png',
-        after:  'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Re-encode_2.png',
-      },
-      {
-        before: 'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Source_3.png',
-        after:  'https://raw.githubusercontent.com/Velegand/Velegand/refs/heads/main/image_examples/Re-encode_3.png',
-      }
-    ];
+    // Parse URL parameters for comparisons: expect img1, img2, img3... pairs
+    const params = new URLSearchParams(window.location.search);
+    const pairs = [];
+    // Collect pairs sequentially
+    let idx = 1;
+    while (true) {
+      const before = params.get(`img${idx * 2 - 1}`);
+      const after = params.get(`img${idx * 2}`);
+      if (!before || !after) break;
+      pairs.push({ before, after });
+      idx++;
+    }
 
     function getFilename(url) {
       try { return decodeURIComponent(url.split('/').pop().split('?')[0]); }
       catch { return url; }
     }
 
-    comparisons.forEach((cmp, idx) => {
-      const containerId = `slider${idx+1}`;
-      const beforeNameId = `before-name-${idx+1}`;
-      const afterNameId = `after-name-${idx+1}`;
+    const container = document.getElementById('comparisons');
+    pairs.forEach((cmp, i) => {
+      const compId = `slider${i + 1}`;
+      const beforeName = getFilename(cmp.before);
+      const afterName = getFilename(cmp.after);
 
-      // Display filenames
-      document.getElementById(beforeNameId).textContent = `Before: ${getFilename(cmp.before)}`;
-      document.getElementById(afterNameId).textContent  = `After: ${getFilename(cmp.after)}`;
+      // Create DOM structure
+      const compDiv = document.createElement('div');
+      compDiv.className = 'comparison-container';
+      compDiv.innerHTML = `
+        <div id="${compId}" class="slider"></div>
+        <div class="filenames">
+          <div>Before: ${beforeName}</div>
+          <div>After: ${afterName}</div>
+        </div>
+      `;
+      container.appendChild(compDiv);
 
       // Initialize JuxtaposeJS slider
-      new juxtapose.JXSlider(`#${containerId}`, [
-        { src: cmp.before, label: getFilename(cmp.before) },
-        { src: cmp.after,  label: getFilename(cmp.after)  }
+      new juxtapose.JXSlider(`#${compId}`, [
+        { src: cmp.before, label: beforeName },
+        { src: cmp.after,  label: afterName }
       ], {
         animate: true,
         showLabels: true,
         showCredits: false,
         makeResponsive: true
-      });
-
-      // Add Panzoom on load
-      window.addEventListener('load', () => {
-        document.querySelectorAll(`#${containerId} img`).forEach(img => {
-          Panzoom(img, { maxScale: 4, contain: 'outside' });
-        });
       });
     });
   </script>
