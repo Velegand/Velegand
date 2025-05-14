@@ -2,37 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Image Comparison</title>
+  <title>Multi Image Comparison</title>
   <!-- JuxtaposeJS CSS -->
   <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
   <link href='https://fonts.googleapis.com/css?family=Monda' rel='stylesheet'>
   <style>
-    body { margin: 0; padding: 0; font-family: Monda;background-color:#0d1117; color:#f0f6fc; }
+    body { margin: 0; padding: 0; font-family: Monda; background-color: #0d1117; color: #f0f6fc; }
     .comparison-container { width: 100%; max-width: 1700px; margin: 40px auto; }
     .slider { width: 100%; height: 60vh; }
     .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #151b23; font-size: 14px; color: #f0f6fc; word-break: break-all; }
+    h2.subtitle { text-align: center; margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <h1 style="text-align: center; padding-top: 20px;">Multi Image Comparison</h1>
-  <h2 style="text-align: center;">7038 kb/s VS 2035 kb/s</h2>
+  <h2 id="subtitle" class="subtitle"></h2>
 
   <div id="comparisons"></div>
 
   <!-- Scripts -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
   <script>
-    // Parse URL parameters for comparisons: expect img1, img2, img3... pairs
+    // Parse URL parameters: title, and img1/img2 pairs
     const params = new URLSearchParams(window.location.search);
+    // Set subtitle from URL 'title' param
+    const subtitleText = params.get('title');
+    if (subtitleText) {
+      document.getElementById('subtitle').textContent = subtitleText;
+    }
+
     const pairs = [];
-    // Collect pairs sequentially
-    let idx = 1;
-    while (true) {
+    const maxPairs = 50; // safeguard
+    for (let idx = 1; idx <= maxPairs; idx++) {
       const before = params.get(`img${idx * 2 - 1}`);
       const after = params.get(`img${idx * 2}`);
       if (!before || !after) break;
       pairs.push({ before, after });
-      idx++;
     }
 
     function getFilename(url) {
@@ -41,34 +46,38 @@
     }
 
     const container = document.getElementById('comparisons');
-    pairs.forEach((cmp, i) => {
-      const compId = `slider${i + 1}`;
-      const beforeName = getFilename(cmp.before);
-      const afterName = getFilename(cmp.after);
+    if (pairs.length === 0) {
+      container.innerHTML = '<p style="text-align:center;">No valid image pairs provided in URL.</p>';
+    } else {
+      pairs.forEach((cmp, i) => {
+        const compId = `slider${i + 1}`;
+        const beforeName = getFilename(cmp.before);
+        const afterName = getFilename(cmp.after);
 
-      // Create DOM structure
-      const compDiv = document.createElement('div');
-      compDiv.className = 'comparison-container';
-      compDiv.innerHTML = `
-        <div id="${compId}" class="slider"></div>
-        <div class="filenames">
-          <div>Before: ${beforeName}</div>
-          <div>After: ${afterName}</div>
-        </div>
-      `;
-      container.appendChild(compDiv);
+        // Create DOM structure
+        const compDiv = document.createElement('div');
+        compDiv.className = 'comparison-container';
+        compDiv.innerHTML = `
+          <div id="${compId}" class="slider"></div>
+          <div class="filenames">
+            <div>Before: ${beforeName}</div>
+            <div>After: ${afterName}</div>
+          </div>
+        `;
+        container.appendChild(compDiv);
 
-      // Initialize JuxtaposeJS slider
-      new juxtapose.JXSlider(`#${compId}`, [
-        { src: cmp.before, label: beforeName },
-        { src: cmp.after,  label: afterName }
-      ], {
-        animate: true,
-        showLabels: true,
-        showCredits: false,
-        makeResponsive: true
+        // Initialize JuxtaposeJS slider
+        new juxtapose.JXSlider(`#${compId}`, [
+          { src: cmp.before, label: beforeName },
+          { src: cmp.after,  label: afterName }
+        ], {
+          animate: true,
+          showLabels: true,
+          showCredits: false,
+          makeResponsive: true
+        });
       });
-    });
+    }
   </script>
 </body>
 </html>
