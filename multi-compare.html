@@ -36,6 +36,7 @@
 
     <label for="generatedUrl">Generated URL:</label>
     <input type="text" id="generatedUrl" readonly />
+	<button id="copyButton">Copy</button>
   </div>
 
   <!-- Scripts -->
@@ -126,6 +127,19 @@
       populateFieldsFromUrl();
       updateGeneratedUrl();
     });
+	
+	document.getElementById('copyButton').addEventListener('click', () => {
+		const urlField = document.getElementById('generatedUrl');
+		urlField.select();
+		urlField.setSelectionRange(0, 99999); // For mobile devices
+
+    // Use the Clipboard API
+		navigator.clipboard.writeText(urlField.value).then(() => {
+			alert('URL copied to clipboard!');
+		}).catch(err => {
+			console.error('Failed to copy: ', err);
+		});
+	});
   </script>
 </body>
 </html>
