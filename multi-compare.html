@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
   <link href='https://fonts.googleapis.com/css?family=Monda' rel='stylesheet'>
   <style>
-    body { margin: 0; padding: 0; font-family: Monda; background-color: #0d1117; color: #f0f6fc; }
+body { margin: 0; padding: 0; font-family: Monda; background-color: #0d1117; color: #f0f6fc; }
 .comparison-container { width: 100%; max-width: 1700px; margin: 40px auto; }
 .slider { width: 100%; height: 60vh; }
 .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #151b23; font-size: 14px; color: #f0f6fc; word-break: break-all; }
@@ -18,15 +18,61 @@ textarea, input[type='text'] {
       border: 1px solid #30363d; padding: 8px; margin-bottom: 16px;
     }
 label { display: block; margin-bottom: 8px; }
-.copy-text{
-  display: flex;  gap: 0px;width:102%;
+.copy-text {
+  display: flex;
+  gap: 0;
+  width: 102%;
+  align-items: stretch; /* Makes both elements same height */
 }
-#copyButton {
-  align: centre;
-  padding: 3px;
-  padding-top:0px;
-  padding-botton:0px;
-  margin-bottom: 16px;
+
+#generatedUrl {
+  height: 38x; /* Explicit height matching button */
+  box-sizing: border-box; /* Include padding in height */
+}
+
+.copy-text button{
+  background: #30363d;
+  border: 1px solid #444c56;
+  cursor: pointer;
+  width:35px;
+  height: 35px;
+  box-sizing: border-box; 
+}
+
+.copy-text button svg {
+  width: 18px;
+  height: 18px;
+  padding:0;
+}
+.copy-text button:hover {
+  background: #444c56;
+}
+.copy-text button:active {
+  background: #6d7a8a;
+}
+.copy-text button:before {
+  content:"Copied";
+  position:absolute;
+  transform: translate(-20px, -39px);
+  background: #30363d;
+  padding:4px 7px;
+  border-radius:20px;
+  font-size:14px;
+  color:#b5b5b5;
+  display:none;
+}
+.copy-text button:after {
+  content:"";
+  position:absolute;
+  transform: translate(-14px, -20px)rotate(45deg);
+  width:10px;
+  height:10px;
+  background: #30363d;
+  display:none;
+}
+.copy-text.active button:before,
+.copy-text.active button:after{
+  display:block;
 }
   </style>
 </head>
@@ -52,7 +98,8 @@ label { display: block; margin-bottom: 8px; }
   <!-- Scripts -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
   <script>
-    const params = new URLSearchParams(window.location.search);
+    src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js">
+const params = new URLSearchParams(window.location.search);
     const subtitleText = params.get('title');
     if (subtitleText) {
       document.getElementById('subtitle').textContent = subtitleText;
@@ -137,8 +184,10 @@ label { display: block; margin-bottom: 8px; }
       populateFieldsFromUrl();
       updateGeneratedUrl();
     });
-	
-	document.getElementById('copyButton').addEventListener('click', () => {
+
+
+
+document.getElementById('copyButton').addEventListener('click', () => {
 		const urlField = document.getElementById('generatedUrl');
 		urlField.select();
 		urlField.setSelectionRange(0, 99999); // For mobile devices
