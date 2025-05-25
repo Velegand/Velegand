@@ -110,12 +110,11 @@
       const imageLines = document.getElementById('imageUrls').value.trim().split('\n').filter(Boolean);
       const title = document.getElementById('titles').value.trim();
       const searchParams = new URLSearchParams();
-
+	  
+	  if (title) searchParams.set('title', title);
       imageLines.forEach((line, i) => {
         searchParams.set(`img${i + 1}`, line.trim());
-      });
-
-      if (title) searchParams.set('title', title);
+      });      
 
       const generatedUrl = `${baseUrl}?${searchParams.toString()}`;
       document.getElementById('generatedUrl').value = generatedUrl;
