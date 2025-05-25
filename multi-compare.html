@@ -12,6 +12,12 @@
     .slider { width: 100%; height: 60vh; }
     .filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #151b23; font-size: 14px; color: #f0f6fc; word-break: break-all; }
     h2.subtitle { text-align: center; margin-bottom: 20px; }
+    .toolbox { max-width: 800px; margin: 40px auto; padding: 20px; background: #1c2128; border-radius: 8px; }
+    textarea, input[type='text'] {
+      width: 100%; background: #0d1117; color: #f0f6fc;
+      border: 1px solid #30363d; padding: 8px; margin-bottom: 16px;
+    }
+    label { display: block; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -20,19 +26,29 @@
 
   <div id="comparisons"></div>
 
+  <div class="toolbox">
+    <h3>Generate Shareable Link</h3>
+    <label for="imageUrls">Image URLs (one per line):</label>
+    <textarea id="imageUrls" rows="6"></textarea>
+
+    <label for="titles">Title:</label>
+    <textarea id="titles" rows="1"></textarea>
+
+    <label for="generatedUrl">Generated URL:</label>
+    <input type="text" id="generatedUrl" readonly />
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
   <script>
-    // Parse URL parameters: title, and img1/img2 pairs
     const params = new URLSearchParams(window.location.search);
-    // Set subtitle from URL 'title' param
     const subtitleText = params.get('title');
     if (subtitleText) {
       document.getElementById('subtitle').textContent = subtitleText;
     }
 
     const pairs = [];
-    const maxPairs = 50; // safeguard
+    const maxPairs = 50;
     for (let idx = 1; idx <= maxPairs; idx++) {
       const before = params.get(`img${idx * 2 - 1}`);
       const after = params.get(`img${idx * 2}`);
@@ -54,7 +70,6 @@
         const beforeName = getFilename(cmp.before);
         const afterName = getFilename(cmp.after);
 
-        // Create DOM structure
         const compDiv = document.createElement('div');
         compDiv.className = 'comparison-container';
         compDiv.innerHTML = `
@@ -66,7 +81,6 @@
         `;
         container.appendChild(compDiv);
 
-        // Initialize JuxtaposeJS slider
         new juxtapose.JXSlider(`#${compId}`, [
           { src: cmp.before, label: beforeName },
           { src: cmp.after,  label: afterName }
@@ -78,6 +92,41 @@
         });
       });
     }
+
+    // URL builder section
+    function populateFieldsFromUrl() {
+      const imageUrls = [];
+      for (let idx = 1; idx <= maxPairs * 2; idx++) {
+        const val = params.get(`img${idx}`);
+        if (!val) break;
+        imageUrls.push(val);
+      }
+      document.getElementById('imageUrls').value = imageUrls.join('\n');
+      document.getElementById('titles').value = params.get('title') || '';
+    }
+
+    function updateGeneratedUrl() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const imageLines = document.getElementById('imageUrls').value.trim().split('\n').filter(Boolean);
+      const title = document.getElementById('titles').value.trim();
+      const searchParams = new URLSearchParams();
+
+      imageLines.forEach((line, i) => {
+        searchParams.set(`img${i + 1}`, line.trim());
+      });
+
+      if (title) searchParams.set('title', title);
+
+      const generatedUrl = `${baseUrl}?${searchParams.toString()}`;
+      document.getElementById('generatedUrl').value = generatedUrl;
+    }
+
+    document.getElementById('imageUrls').addEventListener('input', updateGeneratedUrl);
+    document.getElementById('titles').addEventListener('input', updateGeneratedUrl);
+    window.addEventListener('DOMContentLoaded', () => {
+      populateFieldsFromUrl();
+      updateGeneratedUrl();
+    });
   </script>
 </body>
 </html>
