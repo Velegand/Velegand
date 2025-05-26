@@ -3,46 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <title>Image Comparison</title>
-  <!-- JuxtaposeJS CSS -->
   <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
   <link href='https://fonts.googleapis.com/css?family=Monda' rel='stylesheet'>
   <style>
-body { margin: 0; padding: 0; font-family: Monda; background-color: #0d1117; color: #f0f6fc; }
-.comparison-container { width: 100%; max-width: 1700px; margin: 40px auto; }
-.slider { width: 100%; height: 60vh; }
-.filenames { display: flex; justify-content: space-between; padding: 8px 16px; background: #151b23; font-size: 14px; color: #f0f6fc; word-break: break-all; }
-h2.subtitle { text-align: center; margin-bottom: 20px; }
-.toolbox { max-width: 800px; margin: 40px auto; padding: 20px; background: #1c2128; border-radius: 8px; }
-textarea, input[type='text'] {
-      width: 100%; background: #0d1117; color: #f0f6fc;
-      border: 1px solid #30363d; padding: 8px; margin-bottom: 16px;
-    }
-label { display: block; margin-bottom: 8px; }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Monda;
+  background-color: #0d1117;
+  color: #f0f6fc;
+}
+.comparison-container {
+  width: 100%;
+  max-width: 1700px;
+  margin: 40px auto;
+}
+.slider {
+  width: 100%;
+  height: 60vh;
+}
+.filenames {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #151b23;
+  font-size: 14px;
+  color: #f0f6fc;
+  word-break: break-word;
+}
+h2.subtitle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.toolbox {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #1c2128;
+  border-radius: 8px;
+}
+textarea,
+input[type='text'] {
+  width: 100%;
+  background: #0d1117;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+}
 .copy-text {
   display: flex;
-  gap: 0;
-  width: 102%;
-  align-items: stretch; /* Makes both elements same height */
+  width: 100%;
+  align-items: stretch;
 }
-
 #generatedUrl {
-  height: 35px; /* Explicit height matching button */
-  box-sizing: border-box; /* Include padding in height */
+  height: 35px;
+  box-sizing: border-box;
 }
-
-.copy-text button{
+.copy-text button {
   background: #30363d;
   border: 1px solid #444c56;
   cursor: pointer;
-  width:35px;
+  width: 35px;
   height: 35px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
+  position: relative;
 }
-
 .copy-text button svg {
   width: 18px;
   height: 18px;
-  padding:0;
 }
 .copy-text button:hover {
   background: #444c56;
@@ -50,82 +83,83 @@ label { display: block; margin-bottom: 8px; }
 .copy-text button:active {
   background: #6d7a8a;
 }
-.copy-text button:before {
-  content:"Copied";
-  position:absolute;
+.copy-text button::before {
+  content: "Copied";
+  position: absolute;
   transform: translate(-19px, -39px);
   background: #30363d;
-  padding:4px 7px;
-  border-radius:20px;
-  font-size:14px;
-  color:#b5b5b5;
-  display:none;
+  padding: 4px 7px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #b5b5b5;
+  display: none;
 }
-.copy-text button:after {
-  content:"";
-  position:absolute;
-  transform: translate(6px, -40px)rotate(45deg);
-  width:10px;
-  height:10px;
+.copy-text button::after {
+  content: "";
+  position: absolute;
+  transform: translate(6px, -40px) rotate(45deg);
+  width: 10px;
+  height: 10px;
   background: #30363d;
-  display:none;
+  display: none;
 }
-.copy-text.active button:before,
-.copy-text.active button:after{
-  display:block;
+.copy-text.active button::before,
+.copy-text.active button::after {
+  display: block;
+}
+textarea.linenumbers {
+  font-family: monospace;
+  line-height: 1.5;
+  counter-reset: linenumber;
+}
+textarea.linenumbers::before {
+  content: counter(linenumber);
+  counter-increment: linenumber;
 }
   </style>
 </head>
 <body>
   <h1 style="text-align: center; padding-top: 20px;">Image Comparison</h1>
   <h2 id="subtitle" class="subtitle"></h2>
-
   <div id="comparisons"></div>
-
   <div class="toolbox">
     <h3>Generate Shareable Link</h3>
     <label for="imageUrls">Image URLs (one per line):</label>
-    <textarea id="imageUrls" rows="6"></textarea>
-
+    <textarea id="imageUrls" class="linenumbers" rows="6"></textarea>
     <label for="titles">Title:</label>
     <textarea id="titles" rows="1"></textarea>
-
     <label for="generatedUrl">Generated URL:</label>
-    <div class="copy-text"> <input type="text" id="generatedUrl" readonly /><button id="copyButton">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path></svg></button> </div>
+    <div class="copy-text">
+      <input type="text" id="generatedUrl" readonly />
+      <button id="copyButton">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path>
+        </svg>
+      </button>
+    </div>
   </div>
-
-  <!-- Scripts -->
   <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
   <script>
-    
-    // URL parameter handling
     const params = new URLSearchParams(window.location.search);
     const subtitleText = params.get('title');
-    if (subtitleText) {
-      document.getElementById('subtitle').textContent = subtitleText;
-    }
+    if (subtitleText) document.getElementById('subtitle').textContent = subtitleText;
 
-    // Image pair processing
     const pairs = [];
-    const maxPairs = 50;
-    for (let idx = 1; idx <= maxPairs; idx++) {
+    for (let idx = 1; idx <= 50; idx++) {
       const before = params.get(`img${idx * 2 - 1}`);
       const after = params.get(`img${idx * 2}`);
       if (!before || !after) break;
       pairs.push({ before, after });
     }
 
-    // Filename extraction
     function getFilename(url) {
-      try { 
-        return decodeURIComponent(url.split('/').pop().split('?')[0]); 
-      } catch { 
-        return url; 
+      try {
+        return decodeURIComponent(url.split('/').pop().split('?')[0]);
+      } catch {
+        return url;
       }
     }
 
-    // Slider creation
     const container = document.getElementById('comparisons');
     if (pairs.length === 0) {
       container.innerHTML = '<p style="text-align:center;">No valid image pairs provided in URL.</p>';
@@ -142,13 +176,12 @@ label { display: block; margin-bottom: 8px; }
           <div class="filenames">
             <div>Before: ${beforeName}</div>
             <div>After: ${afterName}</div>
-          </div>
-        `;
+          </div>`;
         container.appendChild(compDiv);
 
         new juxtapose.JXSlider(`#${compId}`, [
           { src: cmp.before, label: beforeName },
-          { src: cmp.after,  label: afterName }
+          { src: cmp.after, label: afterName }
         ], {
           animate: true,
           showLabels: true,
@@ -158,10 +191,9 @@ label { display: block; margin-bottom: 8px; }
       });
     }
 
-    // URL builder functions
     function populateFieldsFromUrl() {
       const imageUrls = [];
-      for (let idx = 1; idx <= maxPairs * 2; idx++) {
+      for (let idx = 1; idx <= 100; idx++) {
         const val = params.get(`img${idx}`);
         if (!val) break;
         imageUrls.push(val);
@@ -175,40 +207,30 @@ label { display: block; margin-bottom: 8px; }
       const imageLines = document.getElementById('imageUrls').value.trim().split('\n').filter(Boolean);
       const title = document.getElementById('titles').value.trim();
       const searchParams = new URLSearchParams();
-      
-      if (title) searchParams.set('title', title);
-      imageLines.forEach((line, i) => {
-        searchParams.set(`img${i + 1}`, line.trim());
-      });      
 
-      const generatedUrl = `${baseUrl}?${searchParams.toString()}`;
-      document.getElementById('generatedUrl').value = generatedUrl;
+      if (title) searchParams.set('title', title);
+      imageLines.forEach((line, i) => searchParams.set(`img${i + 1}`, line.trim()));
+      document.getElementById('generatedUrl').value = `${baseUrl}?${searchParams.toString()}`;
     }
 
-    // Event listeners
-    document.getElementById('imageUrls').addEventListener('input', updateGeneratedUrl);
-    document.getElementById('titles').addEventListener('input', updateGeneratedUrl);
+    ['imageUrls', 'titles'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateGeneratedUrl);
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
       populateFieldsFromUrl();
       updateGeneratedUrl();
     });
 
-    // COPY FUNCTIONALITY (Improved version)
     document.getElementById('copyButton').addEventListener('click', () => {
       const urlField = document.getElementById('generatedUrl');
       const copyText = document.querySelector('.copy-text');
-      
       urlField.select();
       navigator.clipboard.writeText(urlField.value).then(() => {
         copyText.classList.add('active');
-        setTimeout(() => {
-          copyText.classList.remove('active');
-        }, 2000);
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-      });
+        setTimeout(() => copyText.classList.remove('active'), 2000);
+      }).catch(err => console.error('Failed to copy: ', err));
     });
-
   </script>
 </body>
 </html>

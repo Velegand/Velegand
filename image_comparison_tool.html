@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Image Comparison</title>
+  <link rel="stylesheet" href="https://cdn.knightlab.com/libs/juxtapose/latest/css/juxtapose.css" />
+  <link href='https://fonts.googleapis.com/css?family=Monda' rel='stylesheet'>
+  <link rel="stylesheet" href="image_comparison_tool.css">
+</head>
+<body>
+  <h1 style="text-align: center; padding-top: 20px;">Image Comparison</h1>
+  <h2 id="subtitle" class="subtitle"></h2>
+  <div id="comparisons"></div>
+  <div class="toolbox">
+    <h3>Generate Shareable Link</h3>
+    <label for="imageUrls">Image URLs (one per line):</label>
+    <textarea id="imageUrls" class="linenumbers" rows="6"></textarea>
+    <label for="titles">Title:</label>
+    <textarea id="titles" rows="1"></textarea>
+    <label for="generatedUrl">Generated URL:</label>
+    <div class="copy-text">
+      <input type="text" id="generatedUrl" readonly />
+      <button id="copyButton">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-xs">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7 3.34315 8.34315 2 10 2H19C20.6569 2 22 3.34315 22 5V14C22 15.6569 20.6569 17 19 17H17V19C17 20.6569 15.6569 22 14 22H5C3.34315 22 2 20.6569 2 19V10C2 8.34315 3.34315 7 5 7H7V5ZM9 7H14C15.6569 7 17 8.34315 17 10V15H19C19.5523 15 20 14.5523 20 14V5C20 4.44772 19.5523 4 19 4H10C9.44772 4 9 4.44772 9 5V7ZM5 9C4.44772 9 4 9.44772 4 10V19C4 19.5523 4.44772 20 5 20H14C14.5523 20 15 19.5523 15 19V10C15 9.44772 14.5523 9 14 9H5Z" fill="currentColor"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <script src="https://cdn.knightlab.com/libs/juxtapose/latest/js/juxtapose.min.js"></script>
+  <script src="image_comparison_tool.js"></script>
+</body>
+</html>

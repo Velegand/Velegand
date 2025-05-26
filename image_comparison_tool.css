@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Monda;
+  background-color: #0d1117;
+  color: #f0f6fc;
+}
+
+.comparison-container {
+  width: 100%;
+  max-width: 1700px;
+  margin: 40px auto;
+}
+
+.slider {
+  width: 100%;
+  height: 60vh;
+}
+
+.filenames {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #151b23;
+  font-size: 14px;
+  color: #f0f6fc;
+  word-break: break-word;
+}
+
+h2.subtitle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.toolbox {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #1c2128;
+  border-radius: 8px;
+}
+
+textarea,
+input[type='text'] {
+  width: 100%;
+  background: #0d1117;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.copy-text {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+#generatedUrl {
+  height: 35px;
+  box-sizing: border-box;
+}
+
+.copy-text button {
+  background: #30363d;
+  border: 1px solid #444c56;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.copy-text button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.copy-text button:hover {
+  background: #444c56;
+}
+
+.copy-text button:active {
+  background: #6d7a8a;
+}
+
+.copy-text button::before {
+  content: "Copied";
+  position: absolute;
+  transform: translate(-19px, -39px);
+  background: #30363d;
+  padding: 4px 7px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #b5b5b5;
+  display: none;
+}
+
+.copy-text button::after {
+  content: "";
+  position: absolute;
+  transform: translate(6px, -40px) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: #30363d;
+  display: none;
+}
+
+.copy-text.active button::before,
+.copy-text.active button::after {
+  display: block;
+}
+
+textarea.linenumbers {
+  font-family: monospace;
+  line-height: 1.5;
+  counter-reset: linenumber;
+}
+
+textarea.linenumbers::before {
+  content: counter(linenumber);
+  counter-increment: linenumber;
+}
